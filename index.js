@@ -8,6 +8,20 @@ const gravity = 0.2
 
 c.fillRect(0 ,0 , canvas.width, canvas.height)
 
+const keys = {
+    a:{
+        pressed:false
+    },
+    d:{
+        pressed:false
+    },
+    w:{
+        pressed:false
+    }
+}
+
+let lastKey;
+
 class Sprite{
     constructor({position, velocity}){
         this.position = position
@@ -26,10 +40,15 @@ class Sprite{
         this.position.y += this.velocity.y
         this.position.x += this.velocity.x
         
+        //reach the bottom
         if(this.position.y + this.height + this.velocity.y >= canvas.height){
             this.velocity.y = 0
         }else{
             this.velocity.y += gravity
+        }
+
+        if(this.position.y <= 0){
+            this.velocity.y = 11
         }
     }
 }
@@ -50,7 +69,7 @@ const player = new Sprite({
 const enemy = new Sprite({
     position:{
         x:550,
-        y:0
+        y:150
     },
     velocity:{
         x:0,
@@ -63,8 +82,17 @@ function animate(){
     window.requestAnimationFrame(animate)
     c.fillStyle = 'black'
     c.fillRect(0, 0, canvas.width, canvas.height)
+
     player.update()
     enemy.update()
+    
+    player.velocity.x = 0
+    if(keys.d.pressed && lastKey === 'd'){
+        player.velocity.x = 3
+    }else if(keys.a.pressed && lastKey === 'a'){
+        player.velocity.x = -3
+    }
+    
 }
 
 animate()
@@ -73,23 +101,35 @@ window.addEventListener('keydown', (e)=>{
     console.log(e)
     switch (e.key){
         case 'd':
-            player.velocity.x = 2
+            keys.d.pressed = true
+            lastKey = 'd'
             break;
         case 'a':
-            player.velocity.x = -2
+            keys.a.pressed = true
+            lastKey = 'a'
             break;
-        
+        case 'w':
+            keys.w.pressed = true
+            player.velocity.y = -10
+            break;
     }
 })
 
 window.addEventListener('keyup', (e)=>{
-    console.log(e)
+    // console.log(e)
     switch (e.key){
         case 'd':
-            player.velocity.x = 0
+            keys.d.pressed = false
+            lastKey = 'a'
             break;
         case 'a':
-            player.velocity.x = 0
+            keys.a.pressed = false
+            lastKey = 'd'
+            break;
+        case 'w':
+            // keys.a.pressed = true
+            
+            player.velocity.y /= 3
             break;
     }
 })
